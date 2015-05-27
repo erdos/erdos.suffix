@@ -12,6 +12,9 @@ A Clojure library designed to ... well, that part is up to you.
 
 3. run the demo application `lein run /path/to/word/list.txt`
 
+It reads a newline separated list of words from a file and then repeatedly prompts the user for substring search. Can also be used in an unix manner: `echo "resz" | lein run /path/to/word/list.txt`
+
+
 ## API - packages
 
 ### erdos.suffixtrie
@@ -30,7 +33,15 @@ Suffix tree algorithm. Construction is based on Ukkonen's algorithm, thus provid
 
 `(->tree "long text")` Creates a suffix tree object for a single long text. 
 
-`(index-of triee "substring")` Returns the integer index of a substring in a tree, or nil when not found.
+`(index-of triee "substring")` Returns the integer index of a substring in a tree, or `nil` when not found.
+
+### erdos.suffixarray
+
+Suffix array algorithm.
+
+`(->suffixarray "long text")` Constructs a suffix array.
+
+`(index-of suffixarray "subs")` Returns integer index of substring in suffix array or `nil` when not found.
 
 ## License
 
@@ -38,3 +49,4 @@ Copyright © 2015 FIXME
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
+0;95;c

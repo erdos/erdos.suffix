@@ -1,4 +1,5 @@
-(ns erdos.suffixarray)
+(ns erdos.suffixarray
+  "Suffix Array algorithm")
 
 (defn prefixes [xs]
   (->> xs
@@ -57,7 +58,7 @@
             :else imid))))
 
 ;; return idx of substring
-(defn find-subs [sr s]
+(defn index-of [sr s]
   (loop [a 0
          z (-> sr :v count dec)]
     (cond (= a z)
@@ -75,6 +76,8 @@
          :else     x')))))
 
 ;; (find-subs (srot "egy napon, mikor micimackonak semmi dolga nem akadt") "micimacko")
+
+(comment
 
 
 ;;;; UKKONEN algorithm
@@ -111,3 +114,6 @@
           (range (count s))))
 
  (->strie "cacao")
+
+
+  )

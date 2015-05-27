@@ -3,32 +3,32 @@
 
 ;; slightly based on https://github.com/kvh/Python-Suffix-Tree
 
-(defn ->node []
+(defn- ->node []
   {:suffix_node -1})
 
-(defn ->edge [[fci lci] [sni dni]]
+(defn- ->edge [[fci lci] [sni dni]]
   {:fci fci, :lci lci, :sni sni, :dni dni})
 
-(defn edge-length [n]
+(defn- edge-length [n]
   (- (:lci n) (:fci n)))
 
-(defn ->suffix [sni, fci, lci]
+(defn- ->suffix [sni, fci, lci]
   {:sni sni, :fci fci, :lci lci})
 
 (def suffix-length edge-length)
 
-(defn explicit? [suffix]
+(defn- explicit? [suffix]
   (> (:fci suffix) (:lci suffix)))
 
 (def implicit (complement explicit?))
 
-(defn insert-edge [self, edge]
+(defn- insert-edge [self, edge]
   (assoc-in self [:edges [(:sni edge) (nth (:str self) (:fci edge))]] edge))
 
-(defn remove-edge [self {:keys [sni fci]}]
+(defn- remove-edge [self {:keys [sni fci]}]
   (assoc-in self [:edges [sni (nth (:str self) fci)]] nil))
 
-(defn split-edge [self, edge, suffix]
+(defn- split-edge [self, edge, suffix]
   (let [self (update-in self [:nodes] conj (->node))
         e (->edge [(:fci edge)    (+ (:fci edge) (suffix-length suffix) )]
                   [(:sni suffix)  (dec (count (:nodes self)))])
@@ -40,7 +40,7 @@
         self (insert-edge self edge)]
     [self, (:dni e)]))
 
-(defn canonize-suffix- [self, suffix]
+(defn- canonize-suffix- [self, suffix]
   (if-not (explicit? suffix)
     (let [e (get-in self [:edges [(:sni suffix) (nth (:str self) (:fci suffix))]])]
       (if (<= (edge-length e) (suffix-length suffix))
@@ -52,11 +52,11 @@
     suffix))
 
 ;; kenyelmi funkcio, ugyis csak innen hivjuk.
-(defn canonize-suffix [self]
+(defn- canonize-suffix [self]
   (assoc self :active (canonize-suffix- self (:active self))))
 
 
-(defn add-prefix [self, lci]
+(defn- add-prefix [self, lci]
   (let [self (atom self)
         last_parent_node (atom -1)
         parent_node (atom 0)]
@@ -99,7 +99,7 @@
         (update-in [:active :lci] inc)
         (canonize-suffix))))
 
-(defn ->suffixtree [s]
+(defn ->tree [s]
   (let [t {:str s
            :n (dec (count s))
            :nodes [(->node)]
@@ -108,6 +108,8 @@
     (reduce add-prefix t (range (count s)))))
 
 
+
+''''
 (defn st [& xs]
   (reduce (fn [a s]
             (let [word-idx (count (:words a))]
@@ -121,11 +123,11 @@
                     (reduce add-prefix * (range (count s)))
 
 
-                    ; (update-in * [:nw 1] conj word-idx)
+                                        ; (update-in * [:nw 1] conj word-idx)
                     )))
           {:nodes [(->node)], :edges {}} xs))
 
-(->suffixtree "cacao")
+; (->suffixtree "cacao")
 
 
 (defn scontains? [subs idx fulltxt]
@@ -135,10 +137,10 @@
       false)
     true))
 
-(assert (scontains? [2 3] 2 [0 1 2 3 4 5]))
+; (assert (scontains? [2 3] 2 [0 1 2 3 4 5]))
 
 
-(defn find-subs [tree s]
+(defn index-of [tree s]
   (let [|s| (count s)
         tree-str (:str tree) tree-edges (:edges tree)]
     (loop [cur_node 0, i 0, ln nil, edge nil]
@@ -150,6 +152,8 @@
               (recur (:dni edge) (+ i (edge-length edge) 1) ln edge))))
         (+ (:fci edge) (- |s|) ln)))))
 
+
+'''
 (defn find-subs-data [tree s]
   (let [|s| (count s)
         tree-str (:str tree) tree-edges (:edges tree)]
@@ -169,7 +173,9 @@
   (time (find-subs (time (->suffixtree (time (slurp "/home/jano/wordlist-hu-0.3/list/freedict"))))
                    "song"))
 
-  )
+
+
+
 
 
 (assert (nil? (find-subs (->suffixtree "dolorem ipsum dolor sit amet") "ipsumedo")))
@@ -178,3 +184,6 @@
 (find-subs-data (->suffixtree "dolorem ipsum dolor sit amet") "olo")
 
 ;; TODO: massive debug!! pl.: tuple elso fele miert mindig nil??
+
+
+  )

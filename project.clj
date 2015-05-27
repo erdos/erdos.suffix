@@ -6,4 +6,4 @@
   :dependencies [[org.clojure/clojure "1.6.0"]
                  ;[rhizome "0.2.5"]
                  ]
-  :main erdos.suffixtree.main/main)
+  :main erdos.suffix.main/main)

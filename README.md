@@ -2,9 +2,15 @@
 
 A Clojure library designed to ... well, that part is up to you.
 
+
+
 ## Usage
 
-FIXME
+1. install a Java environment and [Leiningen](https://leiningen.org/)
+
+2. clone source code to your computer using git: `git clone https://github.com/erdos/erdos.suffix`
+
+3. run the demo application `lein run /path/to/word/list.txt`
 
 ## License
 

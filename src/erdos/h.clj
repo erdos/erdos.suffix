@@ -25,7 +25,7 @@
   (assert (map? suffix))
   (> (:fci suffix) (:lci suffix)))
 
-(def implicit (complement explicit))
+(def implicit (complement explicit?))
 
 (defn insert-edge [self, edge] ; ok
   (assert (map? self))
@@ -139,5 +139,31 @@
 (st "cacao")
 
 ;(st "abcd")
+
+(defn scontains? [subs idx fulltxt]
+  (if (seq subs)
+    (if (= (nth fulltxt idx) (first subs))
+      (recur (next subs) (inc idx) fulltxt)
+      false)
+    true))
+
+(assert (scontains? [2 3] 2 [0 1 2 3 4 5]))
+
+
+(defn find-subs [tree s]
+  (let [|s| (count s)
+        tree-str (:str tree) tree-edges (:edges tree)]
+    (loop [cur_node 0, i 0, ln nil, edge nil]
+      (if (< i |s|)
+        (when-some [edge (get tree-edges [cur_node (nth s i)])]
+          (let [ln (min (inc (edge-length edge)) (- |s| i))]
+            (when (scontains? (subvec (vec s) i (+ i ln))
+                              (:fci edge) tree-str)
+              (recur (:dni edge) (+ i (edge-length edge) 1) ln edge))))
+        (+ (:fci edge) (- |s|) ln)))))
+
+(assert (nil? (find-subs (st "dolorem ipsum dolor sit amet") "ipsumedo")))
+(assert (integer? (find-subs (st "dolorem ipsum dolor sit amet") "ipsum")))
+
 
 ;; TODO: massive debug!! pl.: tuple elso fele miert mindig nil??

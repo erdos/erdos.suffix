@@ -59,7 +59,7 @@
 (defn add-prefix [self, lci]
   (let [self (atom self)
         last_parent_node (atom -1)
-        parent_node (atom nil)]
+        parent_node (atom 0)]
     (try
       (while true
         (do
@@ -82,7 +82,7 @@
                         (pos? @last_parent_node)
                         (assoc-in [:nodes @last_parent_node :suffix_node] @parent_node))
 
-                (if (zero? (-> * :active :sni))
+                (if (zero? (-> * :active :sni (or 0)))
                   (update-in * [:active :fci] inc)
                   (assoc-in * [:active :sni]
                          (get-in * [:nodes (-> * :active :sni) :suffix_node])))
@@ -94,7 +94,7 @@
       (catch InterruptedException e nil)) ;; end of while loop
 
     (-> @self
-        (cond-> (pos? @last_parent_node)
+        (cond-> (pos? (or @last_parent_node -1))
                 (assoc-in [:nodes @last_parent_node :suffix_node] @parent_node))
         (update-in [:active :lci] inc)
         (canonize-suffix))))
@@ -107,7 +107,26 @@
            :active (->suffix 0 0 -1)}]
     (reduce add-prefix t (range (count s)))))
 
-;;(->suffixtree "cacao")
+
+(defn st [& xs]
+  (reduce (fn [a s]
+            (let [word-idx (count (:words a))]
+              (as-> a *
+                    (assoc *
+                      :str s
+                      :n       (dec (count s))
+                      :active  (->suffix 0 0 -1)
+                      :w     word-idx
+                      :words (conj (:words * []) s))
+                    (reduce add-prefix * (range (count s)))
+
+
+                    ; (update-in * [:nw 1] conj word-idx)
+                    )))
+          {:nodes [(->node)], :edges {}} xs))
+
+(->suffixtree "cacao")
+
 
 (defn scontains? [subs idx fulltxt]
   (if (seq subs)
@@ -144,6 +163,14 @@
         {:index (+ (:fci edge) (- |s|) ln)
          ;; :edge edge
          :node cur_node}))))
+
+(comment
+
+  (time (find-subs (time (->suffixtree (time (slurp "/home/jano/wordlist-hu-0.3/list/freedict"))))
+                   "song"))
+
+  )
+
 
 (assert (nil? (find-subs (->suffixtree "dolorem ipsum dolor sit amet") "ipsumedo")))
 (assert (integer? (find-subs (->suffixtree "dolorem ipsum dolor sit amet") "olo")))

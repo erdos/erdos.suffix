@@ -8,9 +8,6 @@
 
 ;; (prefixes "mississippi")
 
-(defn ->suffixarray [s]
-  )
-
 (defn cc [as bs]
   (cond
    (empty? as) -1
@@ -26,7 +23,7 @@
    (= (first as) (first bs)) (recur (next as) (next bs))
    :else (compare (first as) (first bs))))
 
-(defn srot [xs]
+(defn ->suffixarray [xs]
   (hash-map
    :s xs
    :v (mapv first (sort-by second cc (zipmap (range) (prefixes xs))))))
@@ -51,6 +48,14 @@
 ;; (starts-with? "asdf" "asdffd")
 ;; (starts-with? "assdf" "asdffd")
 
+(defn binsearch [f k imin imax]
+  (when (>= imax imin)
+    (let [imid (midpt imin imax)
+          fm (f imid)]
+      (cond (> fm k) (recur f k imin (dec imid))
+            (< fm k) (recur a k (inc imid) imax)
+            :else imid))))
+
 ;; return idx of substring
 (defn find-subs [sr s]
   (loop [a 0
@@ -70,10 +75,6 @@
          :else     x')))))
 
 ;; (find-subs (srot "egy napon, mikor micimackonak semmi dolga nem akadt") "micimacko")
-
-(int (/ 1 2))
-
-
 
 
 ;;;; UKKONEN algorithm

@@ -43,10 +43,21 @@ Suffix array algorithm.
 
 `(index-of suffixarray "subs")` Returns integer index of substring in suffix array or `nil` when not found.
 
+## Resources
+
+ - Generalized Suffix Tree implementation in java [1](https://github.com/abahgat/suffixtree) and [2](https://gist.github.com/bicepjai/3355993)
+ - GST in C [3](https://github.com/Rerito/suffix-tree)
+ - ST in ruby [4](https://gist.github.com/suchitpuri/9304856)
+ - Nice introduction to ST [5](http://www.cise.ufl.edu/~sahni/dsaaj/enrich/c16/suffix.htm)
+ - [Ukkonen's article](https://www.cs.helsinki.fi/u/ukkonen/SuffixT1withFigs.pdf)
+
+## Results
+
+- found a [bug in a python implementation](https://github.com/zhangliyong/generalized-suffix-tree/issues/1)
+
 ## License
 
 Copyright © 2015 FIXME
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
-0;95;c

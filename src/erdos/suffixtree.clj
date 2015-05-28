@@ -1,6 +1,5 @@
 (ns erdos.suffixtree)
 
-
 ;; slightly based on https://github.com/kvh/Python-Suffix-Tree
 
 (defn- ->node []
@@ -30,7 +29,7 @@
 
 (defn- split-edge [self, edge, suffix]
   (let [self (update-in self [:nodes] conj (->node))
-        e (->edge [(:fci edge)    (+ (:fci edge) (suffix-length suffix) )]
+        e (->edge [(:fci edge)    (+ (:fci edge) (suffix-length suffix))]
                   [(:sni suffix)  (dec (count (:nodes self)))])
         self (remove-edge self edge)
         self (insert-edge self e)
@@ -85,7 +84,7 @@
                 (if (zero? (-> * :active :sni (or 0)))
                   (update-in * [:active :fci] inc)
                   (assoc-in * [:active :sni]
-                         (get-in * [:nodes (-> * :active :sni) :suffix_node])))
+                            (get-in * [:nodes (-> * :active :sni) :suffix_node])))
                 (canonize-suffix *)
                 (reset! self *))
 
@@ -108,26 +107,7 @@
     (reduce add-prefix t (range (count s)))))
 
 
-
-''''
-(defn st [& xs]
-  (reduce (fn [a s]
-            (let [word-idx (count (:words a))]
-              (as-> a *
-                    (assoc *
-                      :str s
-                      :n       (dec (count s))
-                      :active  (->suffix 0 0 -1)
-                      :w     word-idx
-                      :words (conj (:words * []) s))
-                    (reduce add-prefix * (range (count s)))
-
-
-                                        ; (update-in * [:nw 1] conj word-idx)
-                    )))
-          {:nodes [(->node)], :edges {}} xs))
-
-; (->suffixtree "cacao")
+                                        ; (->suffixtree "cacao")
 
 
 (defn scontains? [subs idx fulltxt]
@@ -137,7 +117,7 @@
       false)
     true))
 
-; (assert (scontains? [2 3] 2 [0 1 2 3 4 5]))
+                                        ; (assert (scontains? [2 3] 2 [0 1 2 3 4 5]))
 
 
 (defn index-of [tree s]
@@ -153,37 +133,20 @@
         (+ (:fci edge) (- |s|) ln)))))
 
 
-'''
-(defn find-subs-data [tree s]
-  (let [|s| (count s)
-        tree-str (:str tree) tree-edges (:edges tree)]
-    (loop [cur_node 0, i 0, ln nil, edge nil]
-      (if (< i |s|)
-        (when-some [edge (get tree-edges [cur_node (nth s i)])]
-          (let [ln (min (inc (edge-length edge)) (- |s| i))]
-            (when (scontains? (subvec (vec s) i (+ i ln))
-                              (:fci edge) tree-str)
-              (recur (:dni edge) (+ i (edge-length edge) 1) ln edge))))
-        {:index (+ (:fci edge) (- |s|) ln)
-         ;; :edge edge
-         :node cur_node}))))
-
 (comment
 
-  (time (find-subs (time (->suffixtree (time (slurp "/home/jano/wordlist-hu-0.3/list/freedict"))))
+  (cound false?)
+
+
+
+  (time (index-of (time (->suffixtree (time (slurp "/home/jano/wordlist-hu-0.3/list/freedict"))))
                    "song"))
 
+  (assert (nil? (index-of (->suffixtree "dolorem ipsum dolor sit amet") "ipsumedo")))
 
+  (assert (integer? (index-of (->suffixtree "dolorem ipsum dolor sit amet") "olo")))
 
+  (find-subs-data (->suffixtree "dolorem ipsum dolor sit amet") "olo")
 
-
-
-(assert (nil? (find-subs (->suffixtree "dolorem ipsum dolor sit amet") "ipsumedo")))
-(assert (integer? (find-subs (->suffixtree "dolorem ipsum dolor sit amet") "olo")))
-
-(find-subs-data (->suffixtree "dolorem ipsum dolor sit amet") "olo")
-
-;; TODO: massive debug!! pl.: tuple elso fele miert mindig nil??
-
-
+  ;; TODO: massive debug!! pl.: tuple elso fele miert mindig nil??
   )

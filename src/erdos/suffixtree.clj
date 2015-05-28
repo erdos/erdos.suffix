@@ -27,7 +27,7 @@
 (defn- remove-edge [self {:keys [sni fci]}]
   (assoc-in self [:edges [sni (nth (:str self) fci)]] nil))
 
-(defn- split-edge [self, edge, suffix]
+(defn split-edge [self, edge, suffix]
   (let [self (update-in self [:nodes] conj (->node))
         e (->edge [(:fci edge)    (+ (:fci edge) (suffix-length suffix))]
                   [(:sni suffix)  (dec (count (:nodes self)))])
@@ -98,7 +98,7 @@
         (update-in [:active :lci] inc)
         (canonize-suffix))))
 
-(defn ->tree [s]
+(defn ->suffixtree [s]
   (let [t {:str s
            :n (dec (count s))
            :nodes [(->node)]
@@ -137,6 +137,9 @@
 
   (cound false?)
 
+(time
+ (index-of (->suffixtree "latjatuk feleim szumtukhel mik vogymuk isa pur es homou vogymuk menyi milosztban teremteve mie isemuket adamut es adotta vola paradicsomot neki hazoa")
+           "vogymuk"))
 
 
   (time (index-of (time (->suffixtree (time (slurp "/home/jano/wordlist-hu-0.3/list/freedict"))))

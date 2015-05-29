@@ -27,6 +27,17 @@ It reads a newline separated list of words from a file and then repeatedly promp
 
 ## API - packages
 
+### erdos.gst
+
+Generalized suffix tree implementation. See: `erdos.suffixtree`
+
+`(->suffixtree "abc" "def" ...)` Constructs a suffix tree object.
+
+`(indices-of t "word")` Returns a seq of `[word i]` pairs where the given substring occurs in *word* on index *i*.
+
+`(join t1 t2)` Merges two suffix trees.
+
+
 ### erdos.suffixtrie
 
 This package contains a suffix trie agorithm. Construction is O(N^2) time, space is O(N^2).

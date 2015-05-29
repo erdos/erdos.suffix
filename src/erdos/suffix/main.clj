@@ -26,7 +26,7 @@
     (reset! tree tr)
     :OK)
 
-  (gst/indices-of tr "sdf")
+  (gst/indices-of @tree "vit")
 
 
   )

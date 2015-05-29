@@ -4,10 +4,6 @@
 
 (declare edge-var handle-ab join copy-tree merge-edges)
 
-
-                                        ;(est/->suffixtree "doloremipsumdolo")
-
-
 (defn group-by* [keyfn valfn coll]
   (let [m (group-by keyfn coll)]
     (zipmap (keys m)
@@ -25,12 +21,13 @@
 
 (defn edge-first-char [tree edge]
   (edge-char' tree edge 0))
-
+;; (->suffixtree "latjatuk feleim szumtukhel")
 (defn copy-tree [dest-tree dest-root, source-tree source-edge]
   {:pre [(contains? (:nodes dest-tree) dest-root)
          (contains? (:nodes source-tree) (:dni source-edge))
          (contains? (:nodes source-tree) (:sni source-edge))]}
-  (let [node->chars (group-by* first second (-> source-tree :edges keys))
+  (let [node->chars (into {} (map-indexed (fn [i x] [i (keys x)]) (:nodes source-tree)))
+
         wmap (:wmap source-tree)]
     (loop [dest-tree dest-tree
            xs        [[dest-root source-edge]]]
@@ -38,26 +35,22 @@
        (let [idx (-> dest-tree :nodes count)
              chr (edge-first-char source-tree {:wm wm})
              new-edge {:dni idx :sni dest-root
-                       :len len :wm (zipmap (map wmap (keys wm)) (vals wm))
-                       :_ :cp}]
+                       :len len :wm (zipmap (map wmap (keys wm)) (vals wm))}]
          (recur
           (-> dest-tree
-              (update-in [:nodes] conj {:_idx idx})
-              (assoc-in  [:edges [dest-root chr]] new-edge))
+              (update-in [:nodes] conj {})
+              (assoc-in  [:nodes dest-root chr] new-edge))
           (concat (for [c (node->chars dni)
-                        :let [ed (-> source-tree :edges (get [dni c]))]]
+                        :let [ed (-> source-tree :nodes (get dni) (get c))]]
                     [idx ed]) (rest xs))))
        dest-tree))))
 
-;(msuffixtree "x" "xa")
-
-;; rev1
 (defn edge-split [tree edge idx-rel e1<-wm]
   ;;(println idx-rel)
-'  {:pre [(contains? (:nodes tree) (:dni edge))
+ #_ {:pre [(contains? (:nodes tree) (:dni edge))
          (contains? (:nodes tree) (:sni edge))
          (< 0 idx-rel (:len edge))]
-   :post [(contains? (:nodes (first %))   (:dni (second %)))
+     :post [(contains? (:nodes (first %))   (:dni (second %)))
           (contains? (:nodes (first %))   (:sni (second %)))]}
   (let [i (-> tree :nodes count)
         c1 (edge-first-char tree edge)
@@ -66,17 +59,17 @@
             :len idx-rel
             :wm (into (:wm edge) e1<-wm)}
         e2 {:sni i, :dni (:dni edge),
-            :len (- (:len edge) idx-rel 1)
+            :len (- (:len edge) idx-rel)
             :wm (zipmap (keys (:wm edge))
                         (map (partial + idx-rel) (vals (:wm edge))))}]
     [(-> tree
          (update-in [:nodes] conj {})
-         (assoc-in [:edges [(:sni e1) c1]] e1)
-         (assoc-in [:edges [(:sni e2) c2]] e2))
+         (assoc-in [:nodes (:sni e1) c1] e1)
+         (assoc-in [:nodes (:sni e2) c2] e2))
      e2]))
 
 (defn- tree-edge-wm [tree edge m]
-  (update-in tree [:edges [(:sni edge) (edge-first-char tree edge)] :wm] into m ))
+  (update-in tree [:nodes (:sni edge) (edge-first-char tree edge) :wm] into m ))
 
 (defn edges-substr-length [tree1 edge1 tree2 edge2]
   (let [[w1 i1] (first (:wm edge1)) w1 (-> tree1 :words (nth w1))
@@ -111,22 +104,7 @@
 
      :else             (let [[tree1 e1] (edge-split tree1 edge1 len wm-right)
                              [tree2 e2] (edge-split tree2 edge2 len nil)]
-                         [tree1 (:sni e1) tree2 (:sni e2)])))) ;; XXX dni dni volt.
-
-;;(msuffixtree "x" "xa")
-;;(msuffixtree "xa" "x")
-
-
-;;(msuffixtree "xa" "xa")
-
-
-;;(msuffixtree "x" "ax")
-;;(msuffixtree "ax" "x")
-
-;;(msuffixtree "latjatuk feleim szumtukhel mik vogymuk" "isa pur es homou vogymuk")
-
-
-;(est/->suffixtree "x")
+                         [tree1 (:sni e1) tree2 (:sni e2)]))))
 
 
 ;; Recursive algo, may throw stackoverflow exception
@@ -138,21 +116,23 @@
     (let []
       (let [[_ ab-keys b-keys]
             ,,,(part ;; XXX this is slow, precache maybe?
-                (for [[[a b] v] (:edges tree1) :when (= a root1)] b)
-                (for [[[a b] v] (:edges tree2) :when (= a root2)] b)
+                (keys (get (:nodes tree1) root1))
+                (keys (get (:nodes tree2) root2))
+                ;(for [[[a b] v] (:edges tree1) :when (= a root1)] b)
+                ;(for [[[a b] v] (:edges tree2) :when (= a root2)] b)
                 )
-            tree2-edges (for [b b-keys] (-> tree2 :edges (get [root2 b])))]
+            tree2-edges (map (-> tree2 :nodes (get root2)) b-keys)]
         (-> (as-> tree1 tree
                   (reduce (fn [tree edge] (copy-tree tree root1 tree2 edge)) tree tree2-edges)
                   (reduce (fn [tree k]
-                            (let [[t1 n1 t2 n2] (handle-ab tree  (-> tree  :edges (get [root1 k]))
-                                                           tree2 (-> tree2 :edges (get [root2 k])))]
+                            (let [[t1 n1 t2 n2] (handle-ab tree  (-> tree  :nodes (get root1) (get k))
+                                                           tree2 (-> tree2 :nodes (get root2) (get k)))]
                               (merge-trees t1 n1 t2 n2)))
                           tree ab-keys)))))))
 
 ;(msuffixtree "x" "xa")
 
-(defrecord MSuffixTree [words nodes edges]
+(defrecord MSuffixTree [words nodes]
   ;clojure.lang.Counted
   ;(count [t] (-> t .words count))
   ;clojure.lang.Seqable
@@ -163,27 +143,29 @@
   ;(equiv [t x] (= t x))
   )
 
-;(instance? clojure.lang.IPersistentCollection (->suffixtree "asd"))
-;(count (->suffixtree "asd" "asd"))
-;(count (->MSuffixTree [] 1 1))
-
 (defmulti prepare type)
 (defmethod prepare String [t]
   (prepare (est/->suffixtree t)))
 (defmethod prepare MSuffixTree [t] t)
 
 (defmethod prepare clojure.lang.APersistentMap [t]
-  (->MSuffixTree
-   [(:str t)] (:nodes t)
-   (into {} (for [[k m] (:edges t)]
-              [k
-               {:len (inc (- (:lci m) (:fci m)))
-                :wm {0 (:fci m)}
-                :sni (:sni m) :dni (:dni m)}]))))
+  (let [edges (:edges t)
+        n->c (group-by* first second (keys edges))
+        prep-edge (fn [m]
+                    {:len (inc (- (:lci m) (:fci m)))
+                     :wm {0 (:fci m)}
+                     :sni (:sni m) :dni (:dni m)})
+        nodes (map-indexed (fn [i n]
+                             (let [cs (n->c i)]
+                               (zipmap cs (for [c cs] (prep-edge (get edges [i c]))))))
+                           (:nodes t))]
+    (->MSuffixTree [(:str t)] (vec nodes))))
 
 (defmethod prepare :default [t]
   (throw (IllegalArgumentException.
           (format "Unexpected type: %s" (type t)))))
+
+;; TODO: check for duplicate words.
 
 (defn join [t1 t2]
   (let [t1 (prepare t1)
@@ -199,8 +181,6 @@
 (defn ->suffixtree [& xs]
   (reduce join (map prepare xs)))
 
-;; (->suffixtree "alma" "korte" "ablak" "zsiraf")
-
 (defn- subseq? [seq1 off1, seq2 off2, len]
   (loop [i 0]
     (if (< i len)
@@ -214,7 +194,7 @@
         ws (:words tree)]
     (loop [node 0, i 0, ln nil, edge nil]
       (if (< i |s|)
-        (when-some [edge (get (:edges tree) [node (nth s i)])]
+        (when-some [edge (get-in tree [:nodes node (nth s i)])]
           (let [ln (min (:len edge) (- |s| i))
                 [wk wi] (first (:wm edge))] ;; +1 to len maybe?
             (when (subseq? (vec s) i (ws wk) wi ln)

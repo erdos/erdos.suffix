@@ -1,9 +1,19 @@
 # erdos.suffixtree
 
-A Clojure library designed to ... well, that part is up to you.
+## Status
 
+**done**
+ - Suffix trie, naive suffix tree, suffix array algorithms implemented
+ - Ukkonen's algorithm implemented
 
+**in progress** 
+ - implementing generalized Ukkonen's
+ - test, measure and optimize
 
+**ideas**
+ - parallelized Ukkonen's algorithm in map+reduce style
+ - introduce protocols for common string operations (see `erdos.suffix.core`) and Clojure interop
+ 
 ## Usage
 
 1. install a Java environment and [Leiningen](https://leiningen.org/)
@@ -19,7 +29,7 @@ It reads a newline separated list of words from a file and then repeatedly promp
 
 ### erdos.suffixtrie
 
-This package contains a suffix trie agorithm. Construction is O(N^2) time, space is O(N^2) time.
+This package contains a suffix trie agorithm. Construction is O(N^2) time, space is O(N^2).
 
 `(->trie "word1" "word2" ...)` Create a suffix trie object.
 
@@ -55,11 +65,12 @@ String and lazy sequence manipulation.
 
 ## Resources
 
- - Generalized Suffix Tree implementation in java [1](https://github.com/abahgat/suffixtree) and [2](https://gist.github.com/bicepjai/3355993)
- - GST in C [3](https://github.com/Rerito/suffix-tree)
- - ST in ruby [4](https://gist.github.com/suchitpuri/9304856)
- - Nice introduction to ST [5](http://www.cise.ufl.edu/~sahni/dsaaj/enrich/c16/suffix.htm)
- - [Ukkonen's article](https://www.cs.helsinki.fi/u/ukkonen/SuffixT1withFigs.pdf)
+ - Generalized Suffix Tree implementation in java [1](https://github.com/abahgat/suffixtree) and [2](https://gist.github.com/bicepjai/3355993), C [3](https://github.com/Rerito/suffix-tree), ruby [4](https://gist.github.com/suchitpuri/9304856)
+ - Nice introduction to ST [5](http://www.cise.ufl.edu/~sahni/dsaaj/enrich/c16/suffix.htm) and [6](http://programmerspatch.blogspot.hu/2013/02/ukkonens-suffix-tree-algorithm.html)
+ - A great explanation on [stackoverflow](http://stackoverflow.com/questions/9452701/ukkonens-suffix-tree-algorithm-in-plain-english)
+ - 
+ - [Ukkonen's article](https://www.cs.helsinki.fi/u/ukkonen/SuffixT1withFigs.pdf) and [7](http://web.stanford.edu/~mjkay/gusfield.pdf)
+ 
 
 ## Results
 

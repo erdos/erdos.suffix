@@ -4,10 +4,9 @@
 
 **done**
  - Suffix trie, naive suffix tree, suffix array algorithms implemented
- - Ukkonen's algorithm implemented
+ - Ukkonen's algorithm implemented and generalized
 
 **in progress** 
- - implementing generalized Ukkonen's
  - test, measure and optimize
 
 **ideas**
@@ -24,6 +23,25 @@
 
 It reads a newline separated list of words from a file and then repeatedly prompts the user for substring search. Can also be used in an unix manner: `echo "resz" | lein run /path/to/word/list.txt`
 
+## Example
+
+```clojure
+(require '[erdos.gst :as gst])
+
+(def tree (atom nil))
+
+(let [ls (line-seq (io/reader "/home/jano/wordlist-hu-0.3/list/freedict"))
+      ls (take 1000 ls)
+      tr (time (apply gst/->suffixtree ls))]   
+  (reset! tree tr)
+  :well)
+;; => well
+
+
+(gst/indices-of @tree "vit")
+;; => (["additivit�s" 6] ["aktivit�s" 4])
+
+```
 
 ## API - packages
 

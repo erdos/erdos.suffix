@@ -43,6 +43,16 @@ Suffix array algorithm.
 
 `(index-of suffixarray "subs")` Returns integer index of substring in suffix array or `nil` when not found.
 
+### erdos.str
+
+String and lazy sequence manipulation.
+
+`(prefixes xs)` Creates a sequence of all prefixes of xs.
+
+`(suffixes xs)` Creates a seq of all sufixes.
+
+`(subseqs xs)` Creates seq of all subsequences. That is a list of all prefixes of all suffixes.
+
 ## Resources
 
  - Generalized Suffix Tree implementation in java [1](https://github.com/abahgat/suffixtree) and [2](https://gist.github.com/bicepjai/3355993)

@@ -104,7 +104,9 @@
            :nodes [(->node)]
            :edges {}
            :active (->suffix 0 0 -1)}]
-    (reduce add-prefix t (range (count s)))))
+    (-> (reduce add-prefix t (range (count s)))
+        (dissoc :active))
+    ))
 
 
                                         ; (->suffixtree "cacao")
@@ -122,18 +124,25 @@
 
 (defn index-of [tree s]
   (let [|s| (count s)
-        tree-str (:str tree) tree-edges (:edges tree)]
+        ws (or (seq (:words tree)) [(:str tree)])
+
+
+        tree-edges (:edges tree)]
+;    (assert tree-str)
     (loop [cur_node 0, i 0, ln nil, edge nil]
       (if (< i |s|)
         (when-some [edge (get tree-edges [cur_node (nth s i)])]
           (let [ln (min (inc (edge-length edge)) (- |s| i))]
+            (println (vec s) |s| i (+ i ln) edge)
             (when (scontains? (subvec (vec s) i (+ i ln))
-                              (:fci edge) tree-str)
+                              (:fci edge) (nth ws (or (first (:ws edge)) 0)))
               (recur (:dni edge) (+ i (edge-length edge) 1) ln edge))))
         (+ (:fci edge) (- |s|) ln)))))
 
 
 (comment
+
+(->suffixtree "a")
 
   (cound false?)
 
@@ -142,6 +151,7 @@
            "vogymuk"))
 
 
+;; !! dont run
   (time (index-of (time (->suffixtree (time (slurp "/home/jano/wordlist-hu-0.3/list/freedict"))))
                    "song"))
 

@@ -109,16 +109,16 @@ The following snippet reads _n_ small words from a dictionary and measure tree a
     nil))
 ```
 
-|n | tree construction (ms) | trie construction (ms)|
-|--|------------------------|-----------------------|
-|100 | 115ms | 7ms |
-|1000| 1760ms | 70ms |
-|2000| 3640ms | 150ms |
-|3000| 6700ms | 240ms |
-|4000| 9140ms | 290ms |
-|5000| 12200ms | 400ms |
-|6000| 14100ms | 445ms |
-|7000| 16778ms | 544ms |
+n   | tree construction (ms) | trie construction (ms)
+--- | ---------------------- | ----------------------
+100 | 115ms | 7ms 
+1000 | 1760ms | 70ms 
+2000 | 3640ms | 150ms 
+3000 | 6700ms | 240ms
+4000 | 9140ms | 290ms 
+5000 | 12200ms | 400ms 
+6000 | 14100ms | 445ms 
+7000 | 16778ms | 544ms 
 
 
 ## Resources

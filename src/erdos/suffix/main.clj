@@ -26,12 +26,12 @@
           ls (for [w (partition 12 ls)] (clojure.string/join w))
           ls (vec (take n ls))]
       (System/gc)
-      (time (apply gst/->suffixtree ls))
+      (time (println (count (:nodes (apply gst/->suffixtree ls)))))
       (System/gc)
-      (time (apply strie/->trie ls))
+      (time (println (count (:nodes (apply strie/->trie ls)))))
       nil))
 
-;;  (measure 2000)
+;;  (measure 200)
 
 (let [s "WARNING: The following requ blabalmask following"
       n 100]

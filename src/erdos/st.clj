@@ -1,12 +1,16 @@
 (ns erdos.st
   (:require [erdos.str :as s]))
 
+;;
+;; in active development
+;; do not compile
+;;
 ;;; based on https://github.com/zhangliyong/generalized-suffix-tree
 ;;
 ;; found a bug in algorithm, see: https://github.com/zhangliyong/generalized-suffix-tree/issues/1
 
 
-(declare edge-get-char canonize split-edge go-next)
+(declare edge-get-char canonize split-edge go-next get-char insert-node)
 
 ;; 7
 (defn- ->node
@@ -200,7 +204,7 @@
 
   (let [self (update-in self [:nodes (:active-node self)]
                         node-remove-edge (:active-edge self))
-        [self internal-node] (insert-node self nil)
+        [self internal-node] (insert-node- self nil)
 
         ;;; XXX ha az alabbi sorrendet megforditom, exceptiont dob.
         [edge new-edge] (edge-split edge (:active-length self) internal-node)
@@ -295,27 +299,19 @@
 
 ;(add-suffix-link {} 1 2)
 
-(-> empty-gst
-    (add-text "dolorem ipsum do")
-;;    (add-text "kozismert ipsum szoveg")
 
-    time
-    (search "psum")
-    time)
+;;
+;; bad behavior
+;; does not find str
+;; --> error still persiss in original python implementatin
+;; /!\
 
 (comment
 
+ (-> empty-gst
+     (add-text "mambma")
+     time
+     (search "mambm")
+     time)
 
-(-> empty-gst
-    (add-text "mambma")
-    time
-    (search "mambm")
-    time)
-
-(count (keep false?
-       (for [x (reverse (s/subseqs "masik-empty-gaaaaamasik-bb"))
-             :let [x (apply str x)
-                   m (add-text empty-gst x)]]
-         (number? (search m x)))))
-
-  )
+ )

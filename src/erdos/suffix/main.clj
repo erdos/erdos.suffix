@@ -32,17 +32,12 @@
         ]
     (System/gc))
 
-
-
-
-          folder (fn ([] (gst/->suffixtree "abakusz"))
-                 ([a b] (gst/join a b)))
-
-        ;tr2 (time (r/fold folder ls))
-
-
-
-  (gst/indices-of @tree "vit")
+(let [s "WARNING: The following requ blabalmask following"
+      n 100]
+  (System/gc)
+  (time (dotimes [_ n] (gst/->suffixtree s))) ;; 120
+  (time (dotimes [_ n] (strie/->trie s)));; 100
+  :OK)
 
 
   )

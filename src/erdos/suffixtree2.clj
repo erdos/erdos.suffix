@@ -1,6 +1,11 @@
 (ns erdos.suffixtree2
   (:require [erdos.suffix.core :as sc :refer [find-word find-word-idx]]))
 
+;;
+;; in active development
+;; do not compile
+;;
+;;
 (defn- ->node []
   {:suffix_node -1})
 

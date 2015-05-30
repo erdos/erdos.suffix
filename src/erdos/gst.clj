@@ -167,9 +167,12 @@
 
 (defn join [t1 t2]
   (let [t1 (prepare t1)
-        idxmap1 (vec (range (count (:words t1))))
-
         t2 (prepare t2)
+
+        ;; larger tree should be on the left - so less nodes will be moved
+        [t1 t2] (if (< (-> t1 :nodes count) (-> t2 :nodes count)) [t2 t1] [t1 t2])
+
+        idxmap1 (vec (range (count (:words t1))))
         idxmap2  (mapv (partial + (count (:words t1))) (range (count (:words t2))))
         t2       (assoc t2 :wmap idxmap2)]
     ;;(println (:wmap t2))
@@ -205,3 +208,42 @@
   (put-word [t w] (join t w))
   c/IFindWord
   (find-word [t w] (ffirst (indices-of t w))))
+
+(def tree-empty (->MSuffixTree [] [{}]))
+
+
+(comment
+
+
+;; naive O(n2) algo taking O(n2) space
+(defn add-str-naive [tree s]
+  (let [wi (count (:words tree)), ws (conj (:words tree) s)
+        |s| (count s)]
+    (as-> nil *
+          (reduce (fn [nodes start]
+                    (loop [nodes nodes, node 0, end start]
+                      (if (< end |s|)
+                        (let [ch (nth s end)]
+                          (if-let [m (get (nth nodes node) ch)]
+                            (recur (update-in nodes [node ch :wm] assoc wi end)
+                                   (get m :dni)
+                                   (+ end (:len m)))
+                            (let [idx(count nodes)
+                                  nodes (conj nodes {})
+                                  nodes (assoc-in nodes [node ch]
+                                                  {:wm {wi end} :sni node, :dni idx, :len 1})
+                                  ]
+                              (recur nodes idx (inc end)))
+                            ))
+                        nodes)))
+                  (:nodes tree) (range |s|))
+          {:nodes * :words ws})))
+
+(add-str-naive tree-empty "asd")
+
+(indices-of
+ (reduce add-str-naive tree-empty ["cuscus" "abacus babacus" "cudaus"])
+ "dd")
+
+
+  )

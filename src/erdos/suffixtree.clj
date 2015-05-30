@@ -41,13 +41,14 @@
 
 (defn- canonize-suffix- [self, suffix]
   (if-not (explicit? suffix)
-    (let [e (get-in self [:edges [(:sni suffix) (nth (:str self) (:fci suffix))]])]
-      (if (<= (edge-length e) (suffix-length suffix))
-        (recur self
-               (assoc suffix
-                 :fci (+ (:fci suffix) 1 (edge-length e))
-                 :sni (:dni e)))
-        suffix))
+    (do (println "canonize suffix explicit" suffix)
+     (let [e (get-in self [:edges [(:sni suffix) (nth (:str self) (:fci suffix))]])]
+       (if (<= (edge-length e) (suffix-length suffix))
+         (recur self
+                (assoc suffix
+                  :fci (+ (:fci suffix) 1 (edge-length e))
+                  :sni (:dni e)))
+         suffix)))
     suffix))
 
 ;; kenyelmi funkcio, ugyis csak innen hivjuk.
@@ -56,23 +57,29 @@
 
 
 (defn- add-prefix [self, lci]
+
   (let [self (atom self)
         last_parent_node (atom -1)
         parent_node (atom 0)]
     (try
       (while true
+        (println "(while loop")
         (do
           (reset! parent_node (-> @self :active :sni))
           (if (explicit? (:active @self))
-            (if (contains? (:edges @self) [(-> @self :active :sni) (nth (:str @self) lci)])
-              (throw (InterruptedException.)))
-            (let [e (get (:edges @self) [(-> @self :active :sni) (nth (:str @self) (-> @self :active :fci))])]
-              (if (= (nth (:str @self) (+ (:fci e) (-> @self :active edge-length) 1))
-                     (-> (:str @self) (nth lci)))
-                (throw (InterruptedException.)))
-              (let [[s idx] (split-edge @self, e (:active @self))]
-                (reset! self s)
-                (reset! parent_node idx))))
+            (do (println "explicit!" @self)
+             (if (contains? (:edges @self) [(-> @self :active :sni) (nth (:str @self) lci)])
+               (throw (InterruptedException.))))
+            (do
+              (println "not explicit!" @self)
+              (let [e (get (:edges @self) [(-> @self :active :sni) (nth (:str @self) (-> @self :active :fci))])]
+               (println " (let")
+               (if (= (nth (:str @self) (+ (:fci e) (-> @self :active edge-length) 1))
+                      (-> (:str @self) (nth lci)))
+                 (throw (InterruptedException.)))
+               (let [[s idx] (split-edge @self, e (:active @self))]
+                 (reset! self s)
+                 (reset! parent_node idx)))))
 
           (as-> @self *
                 (update-in * [:nodes] conj  (->node))
@@ -140,26 +147,5 @@
         (+ (:fci edge) (- |s|) ln)))))
 
 
-(comment
 
-(->suffixtree "a")
-
-  (cound false?)
-
-(time
- (index-of (->suffixtree "latjatuk feleim szumtukhel mik vogymuk isa pur es homou vogymuk menyi milosztban teremteve mie isemuket adamut es adotta vola paradicsomot neki hazoa")
-           "vogymuk"))
-
-
-;; !! dont run
-  (time (index-of (time (->suffixtree (time (slurp "/home/jano/wordlist-hu-0.3/list/freedict"))))
-                   "song"))
-
-  (assert (nil? (index-of (->suffixtree "dolorem ipsum dolor sit amet") "ipsumedo")))
-
-  (assert (integer? (index-of (->suffixtree "dolorem ipsum dolor sit amet") "olo")))
-
-  (find-subs-data (->suffixtree "dolorem ipsum dolor sit amet") "olo")
-
-  ;; TODO: massive debug!! pl.: tuple elso fele miert mindig nil??
-  )
+(->suffixtree "abab")

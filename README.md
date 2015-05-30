@@ -92,6 +92,34 @@ String and lazy sequence manipulation.
 
 `(subseqs xs)` Creates seq of all subsequences. That is a list of all prefixes of all suffixes.
 
+## Measurements
+
+### Tree and trie construction
+
+The following snippet reads _n_ small words from a dictionary and measure tree and trie construction times. It turns out that naive trie construction is more effective for a big number of small words.
+
+```clojure
+(defn measure [n]
+  (let [ls (line-seq (io/reader "/tmp/wordlist-hu-0.3/list/freedict"))
+        ls (vec (take n ls))]
+    (System/gc)
+    (time (apply gst/->suffixtree ls))
+    (System/gc)
+    (time (apply strie/->trie ls))
+    nil))
+```
+
+|n | tree construction (ms) | trie construction (ms)|
+|100 | 115ms | 7ms |
+|1000| 1760ms | 70ms |
+|2000| 3640ms | 150ms |
+|3000| 6700ms | 240ms |
+|4000| 9140ms | 290ms |
+|5000| 12200ms | 400ms |
+|6000| 14100ms | 445ms |
+|7000| 16778ms | 544ms |
+
+
 ## Resources
 
  - Generalized Suffix Tree implementation in java [1](https://github.com/abahgat/suffixtree) and [2](https://gist.github.com/bicepjai/3355993), C [3](https://github.com/Rerito/suffix-tree), ruby [4](https://gist.github.com/suchitpuri/9304856)
@@ -100,9 +128,6 @@ String and lazy sequence manipulation.
  - 
  - [Ukkonen's article](https://www.cs.helsinki.fi/u/ukkonen/SuffixT1withFigs.pdf) and [7](http://web.stanford.edu/~mjkay/gusfield.pdf)
  
-
-## Results
-
 - found a [bug in a python implementation](https://github.com/zhangliyong/generalized-suffix-tree/issues/1)
 
 ## License

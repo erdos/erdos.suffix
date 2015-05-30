@@ -21,16 +21,17 @@
 
   (def tree (atom nil))
 
-  (let [ls (line-seq (io/reader "/home/jano/wordlist-hu-0.3/list/freedict"))
-        ls (take 10000 ls)
-        ls (time (vec ls))
-        ;; generalized ukkonen
-        tr (time (apply gst/->suffixtree ls))
-        ;; naive trie building
-        tr2 (time (apply strie/->trie ls))
+  (defn measure [n]
+    (let [ls (line-seq (io/reader "/home/jano/wordlist-hu-0.3/list/freedict"))
+          ls (for [w (partition 12 ls)] (clojure.string/join w))
+          ls (vec (take n ls))]
+      (System/gc)
+      (time (apply gst/->suffixtree ls))
+      (System/gc)
+      (time (apply strie/->trie ls))
+      nil))
 
-        ]
-    (System/gc))
+;;  (measure 2000)
 
 (let [s "WARNING: The following requ blabalmask following"
       n 100]

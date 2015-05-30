@@ -39,7 +39,7 @@
 
 (defn- canonize-suffix- [self, suffix]
   (if-not (explicit? suffix)
-    (do (println "canonize suffix explicit" suffix)
+    (do ;(println "canonize suffix explicit" suffix)
      (let [e (get-in self [:edges [(:sni suffix) (nth (:str self) (:fci suffix))]])]
        (if (<= (edge-length e) (suffix-length suffix))
          (recur self
@@ -60,17 +60,17 @@
         parent_node (atom 0)]
     (try
       (while true
-        (println "(while loop")
+        ;;(println "(while loop")
         (do
           (reset! parent_node (-> @self :active :sni))
           (if (explicit? (:active @self))
-            (do (println "explicit!" @self)
+            (do ;;(println "explicit!" @self)
              (if (contains? (:edges @self) [(-> @self :active :sni) (nth (:str @self) lci)])
                (throw (InterruptedException.))))
             (do
-              (println "not explicit!" @self)
+              ;(println "not explicit!" @self)
               (let [e (get (:edges @self) [(-> @self :active :sni) (nth (:str @self) (-> @self :active :fci))])]
-               (println " (let")
+               ;(println " (let")
                (if (= (nth (:str @self) (+ (:fci e) (-> @self :active edge-length) 1))
                       (-> (:str @self) (nth lci)))
                  (throw (InterruptedException.)))
@@ -137,7 +137,7 @@
       (if (< i |s|)
         (when-some [edge (get tree-edges [cur_node (nth s i)])]
           (let [ln (min (inc (edge-length edge)) (- |s| i))]
-            (println (vec s) |s| i (+ i ln) edge)
+            ;(println (vec s) |s| i (+ i ln) edge)
             (when (scontains? (subvec (vec s) i (+ i ln))
                               (:fci edge) (nth ws (or (first (:ws edge)) 0)))
               (recur (:dni edge) (+ i (edge-length edge) 1) ln edge))))

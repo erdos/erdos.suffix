@@ -110,6 +110,7 @@ The following snippet reads _n_ small words from a dictionary and measure tree a
 ```
 
 |n | tree construction (ms) | trie construction (ms)|
+|--|------------------------|-----------------------|
 |100 | 115ms | 7ms |
 |1000| 1760ms | 70ms |
 |2000| 3640ms | 150ms |

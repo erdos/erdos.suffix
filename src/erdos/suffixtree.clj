@@ -1,7 +1,5 @@
 (ns erdos.suffixtree)
 
-;; slightly based on https://github.com/kvh/Python-Suffix-Tree
-
 (defn- ->node []
   {:suffix_node -1})
 
@@ -54,7 +52,6 @@
 ;; kenyelmi funkcio, ugyis csak innen hivjuk.
 (defn- canonize-suffix [self]
   (assoc self :active (canonize-suffix- self (:active self))))
-
 
 (defn- add-prefix [self, lci]
 

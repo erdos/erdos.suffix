@@ -147,3 +147,5 @@
 
 ;; gets into infinite loop
 ;;(->suffixtree "ABAB" "qwer")
+
+;; OK with 1 arg.

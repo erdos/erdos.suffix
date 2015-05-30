@@ -96,7 +96,28 @@ String and lazy sequence manipulation.
 
 ### Tree and trie construction
 
-The following snippet reads _n_ small words from a dictionary and measure tree and trie construction times. It turns out that naive trie construction is more effective for a big number of small words.
+The following example build a suffix tree and trie for a long text.
+
+```clojure
+(let [s
+"Requiem aeternam dona eis, Domine,
+et lux perpetua luceat eis.
+Te decet hymnus, Deus, in Sion,
+et tibi reddetur votum in Jerusalem.
+Exaudi orationem meam,
+ad te omnis care veniet.
+Requiem aeternam dona eis, Domine,
+et lux perpetua luceat eis."]
+    (time (doto s gst/->suffixtree))
+    (time (doto s strie/->trie)))
+```
+
+tree construction (ms) | trie construction (ms)
+---------------------- | ----------------------
+8msec                  | 30msec
+
+
+The next code snippet reads _n_ small words from a dictionary and measure tree and trie construction times. It turns out that naive trie construction is more effective for a big number of small words.
 
 ```clojure
 (defn measure [n]

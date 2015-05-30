@@ -15,13 +15,11 @@
      (filter bs as)
      (remove as bs)]))
 
-(defn edge-char' [tree edge off]
+(defn- edge-char' [tree edge i]
   (let [[k v] (first (:wm edge))]
-    (-> tree :words (nth k) (nth (+ v off)))))
+    (-> tree :words (nth k) (nth (+ v i)))))
 
-(defn edge-first-char [tree edge]
-  (edge-char' tree edge 0))
-;; (->suffixtree "latjatuk feleim szumtukhel")
+
 (defn copy-tree [dest-tree dest-root, source-tree source-edge]
   {:pre [(contains? (:nodes dest-tree) dest-root)
          (contains? (:nodes source-tree) (:dni source-edge))
@@ -33,7 +31,7 @@
            xs        [[dest-root source-edge]]]
      (if-let [[dest-root {:keys [fci lci dni wm len]}] (first xs)]
        (let [idx (-> dest-tree :nodes count)
-             chr (edge-first-char source-tree {:wm wm})
+             chr (edge-char' source-tree {:wm wm} 0)
              new-edge {:dni idx :sni dest-root
                        :len len :wm (zipmap (map wmap (keys wm)) (vals wm))}]
          (recur
@@ -53,7 +51,7 @@
      :post [(contains? (:nodes (first %))   (:dni (second %)))
           (contains? (:nodes (first %))   (:sni (second %)))]}
   (let [i (-> tree :nodes count)
-        c1 (edge-first-char tree edge)
+        c1 (edge-char' tree edge 0)
         c2 (edge-char' tree edge idx-rel)
         e1 {:sni (:sni edge), :dni i,
             :len idx-rel
@@ -69,7 +67,7 @@
      e2]))
 
 (defn- tree-edge-wm [tree edge m]
-  (update-in tree [:nodes (:sni edge) (edge-first-char tree edge) :wm] into m ))
+  (update-in tree [:nodes (:sni edge) (edge-char' tree edge 0) :wm] into m ))
 
 (defn edges-substr-length [tree1 edge1 tree2 edge2]
   (let [[w1 i1] (first (:wm edge1)) w1 (-> tree1 :words (nth w1))
@@ -82,8 +80,8 @@
 
 ;; G*E*G*E -> G*V*G*V, lefele haladunk a fan.
 (defn handle-ab [tree1 edge1 tree2 edge2]
-  {:pre [(= (edge-first-char tree1 edge1)
-            (edge-first-char tree2 edge2))]
+  {:pre [(= (edge-char' tree1 edge1 0)
+            (edge-char' tree2 edge2 0))]
    :post [(let [[t1 n1, t2 n2] %]
             (contains? (:nodes t1) n1))]}
   ;;(printf "(handle-ab %s %s)\n" edge1 edge2)
@@ -107,7 +105,7 @@
                          [tree1 (:sni e1) tree2 (:sni e2)]))))
 
 
-;; Recursive algo, may throw stackoverflow exception
+;; Recursive algo, may throw stackoverflow exception on very long texts
 ;; G*V*G*V -> G
 (defn merge-trees [tree1 root1 tree2 root2]
   (let []

@@ -1,10 +1,10 @@
-# erdos.suffixtree
+# erdos.suffix
 
 Efficient string search algorithms implemented in Clojure.
 
 ## Rationale
 
-The task is to find a substring of length _M_ in a string of length _N_. The naive linear searchc algorithm has time complexity of _O(M+N)_. We want something better.
+The task is to find a substring of length _M_ in a string of length _N_. The naive linear search algorithm has time complexity of _O(M+N)_. We want something better.
 
 ## Suffix Arrays
 
@@ -21,7 +21,7 @@ The task is to find a substring of length _M_ in a string of length _N_. The nai
  - Suffix trees: nice introduction [5](http://www.cise.ufl.edu/~sahni/dsaaj/enrich/c16/suffix.htm) and [6](http://programmerspatch.blogspot.hu/2013/02/ukkonens-suffix-tree-algorithm.html)
  - Ukkonen: A great explanation on [stackoverflow](http://stackoverflow.com/questions/9452701/ukkonens-suffix-tree-algorithm-in-plain-english)
  - [Ukkonen's article](https://www.cs.helsinki.fi/u/ukkonen/SuffixT1withFigs.pdf) and [7](http://web.stanford.edu/~mjkay/gusfield.pdf) 
-- Ukkonen: found a [bug in a python implementation](https://github.com/zhangliyong/generalized-suffix-tree/issues/1)
+ - Ukkonen: found a [bug in a python implementation](https://github.com/zhangliyong/generalized-suffix-tree/issues/1)
 
 ## License
 

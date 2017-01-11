@@ -1,8 +1,12 @@
 (ns erdos.str
   "Some seq operations")
 
-(defn prefixes [xs]
+;; naive and slow
+(defn lazy-prefixes [xs]
   (take-while some? (iterate butlast (seq xs))))
+
+(defn prefixes [xs]
+  (rest (reductions conj [] xs)))
 
 (defn suffixes [xs]
   (take-while some? (iterate next xs)))
@@ -23,6 +27,24 @@
   (prefix? (reverse word) (reverse xs)))
 
 (defn subseqs [xs]
-  (mapcat prefixes (suffixes xs)))
+  (mapcat suffixes (prefixes xs)))
 
-;; (subseqs [1 2 3 4 5 6])
+(comment
+  ;; in a functional style
+  (mapcat suffixes (prefixes xs))
+  ;; is faster than
+  (mapcat prefixes (suffixes xs))
+
+  ;; see:
+
+  (->> (range 1000)
+       (prefixes) (mapcat suffixes)
+       (map doall) (doall)
+       (time) (count));; 4250 msecs
+
+  (->> (range 1000)
+       (suffixes) (mapcat prefixes)
+       (map doall) (doall)
+       (time) (count)) ;; 5071 msecs
+
+  comment)
